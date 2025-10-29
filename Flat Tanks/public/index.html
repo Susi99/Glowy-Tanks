@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glowy Tanks</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="start-screen">
+        <h1 id="logo">GLOWY TANKS</h1>
+        <div id="menu">
+            <div class="menu-row">
+                <div id="name-error" class="input-error" aria-live="polite"></div>
+            </div>
+            <div class="menu-row">
+                <input type="text" id="player-name" class="menu-input" placeholder="Enter your name" maxlength="20" autocomplete="off">
+            </div>
+            <div class="menu-row">
+                <button id="join-btn" disabled>Join Game</button>
+            </div>
+            <div id="host-section" class="menu-row">
+                <input type="text" id="server-name" class="menu-input" placeholder="Enter server name" maxlength="20" autocomplete="off">
+                <button id="host-btn" disabled>Host Game</button>
+            </div>
+            <!-- Map selection removed - only Neon Grid available -->
+            <div class="menu-row">
+                <button id="audio-settings-btn">Audio Settings</button>
+            </div>
+            <div id="server-list" style="display: none;">
+                <div class="server-list-header">
+                    <h3>
+                        <span class="server-icon">🎮</span>
+                        Available Servers
+                        <span id="server-count" class="server-count">(0)</span>
+                    </h3>
+                    <button id="close-server-list" class="close-btn">×</button>
+                </div>
+                
+                <div id="server-list-content">
+                    <div id="servers" class="servers-container">
+                        <div class="server-list-placeholder">
+                            <div class="placeholder-icon">🔍</div>
+                            <p class="placeholder-text">Searching for servers...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="server-list-footer">
+                        <button id="refresh-btn" class="refresh-btn">
+                            <span class="btn-icon">🔄</span>
+                            Refresh
+                        </button>
+                        <button id="server-back-btn" class="back-btn">
+                            <span class="btn-icon">←</span>
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="audio-settings" style="display: none;">
+        <div class="settings-container">
+            <h2>Audio Settings</h2>
+            <div class="setting-item">
+                <label for="master-volume">Master Volume:</label>
+                <input type="range" id="master-volume" min="0" max="100" value="50">
+                <span id="master-value">50%</span>
+            </div>
+            <div class="setting-item">
+                <label for="sfx-volume">Sound Effects:</label>
+                <input type="range" id="sfx-volume" min="0" max="100" value="70">
+                <span id="sfx-value">70%</span>
+            </div>
+            <div class="setting-item">
+                <label for="mute-all">
+                    <input type="checkbox" id="mute-all"> Mute All
+                </label>
+            </div>
+            <div class="settings-buttons">
+                <button id="apply-settings">Apply</button>
+                <button id="cancel-settings">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div id="game-container" style="display: none;">
+        <!-- Game Controls Panel - Outside Canvas -->
+        <div id="game-controls-panel" class="game-controls-panel">
+            <!-- Volume controls -->
+            <div id="volume-controls" class="neon-volume-controls">
+                <button id="volume-down" class="neon-volume-btn" title="Decrease Volume">
+                    <span class="volume-icon">🔉</span>
+                </button>
+                <div id="volume-display" class="neon-volume-display">50%</div>
+                <button id="volume-up" class="neon-volume-btn" title="Increase Volume">
+                    <span class="volume-icon">🔊</span>
+                </button>
+            </div>
+            
+            <!-- Menu button -->
+            <button id="ingame-menu-btn" class="neon-menu-btn">
+                <span class="menu-icon">☰</span>
+                <span class="menu-text">MENU</span>
+            </button>
+        </div>
+        
+        <div id="play-area">
+            <canvas id="game-canvas" width="1000" height="720"></canvas>
+            <div id="crosshair"></div>
+            
+            <div id="scoreboard">
+                <div id="kills">Kills: 0</div>
+                <div id="players-count">Players: 0</div>
+            </div>
+            <button id="audio-toggle" style="display: none;">&#128266;</button>
+            <div id="volume-slider-container" class="volume-slider-container" style="display: none;">
+                <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="50">
+                <div class="volume-label">50%</div>
+            </div>
+            <button id="back-btn" style="display: none;">Back to Menu</button>
+        </div>
+        <div id="chat-panel">
+            <div id="chat-header">Game Chat</div>
+            <div id="chat-messages"></div>
+            <form id="chat-form" autocomplete="off">
+                <input id="chat-input" type="text" placeholder="Type a message..." maxlength="200">
+                <button type="submit">Send</button>
+            </form>
+        </div>
+        <div id="leaderboard-panel">
+            <div id="leaderboard-header">🏆 Leaderboard</div>
+            <div id="leaderboard-content">
+                <div class="leaderboard-placeholder">
+                    <div class="placeholder-icon">🎯</div>
+                    <p class="placeholder-text">No scores yet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
