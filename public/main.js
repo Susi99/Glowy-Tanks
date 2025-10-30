@@ -1039,6 +1039,11 @@ const volumeDisplay = document.getElementById("volume-display");
 // Leaderboard elements
 const leaderboardContent = document.getElementById("leaderboard-content");
 const leaderboardHeader = document.getElementById("leaderboard-header");
+const leaderboardPanelEl = document.getElementById("leaderboard-panel");
+
+// Chat panel elements
+const chatHeaderEl = document.getElementById("chat-header");
+const chatPanelEl = document.getElementById("chat-panel");
 const hostBtnDefaultText = hostBtn ? hostBtn.textContent.trim() : "Host Game";
 const HOST_BUTTON_START_TEXT = "Start Game";
 
@@ -1532,6 +1537,28 @@ document.addEventListener("keyup", (e) => {
   if (e.code === "ArrowLeft") keys.a = false;
   if (e.code === "ArrowRight") keys.d = false;
 });
+
+// Collapsible HUD panels (chat/leaderboard)
+function setupHUDPanels() {
+  try {
+    if (leaderboardPanelEl && leaderboardHeader) {
+      leaderboardPanelEl.classList.remove('open');
+      leaderboardHeader.style.cursor = 'pointer';
+      leaderboardHeader.addEventListener('click', () => {
+        leaderboardPanelEl.classList.toggle('open');
+      });
+    }
+    if (chatPanelEl && chatHeaderEl) {
+      chatPanelEl.classList.remove('open');
+      chatHeaderEl.style.cursor = 'pointer';
+      chatHeaderEl.addEventListener('click', () => {
+        chatPanelEl.classList.toggle('open');
+      });
+    }
+  } catch (err) {
+    console.warn('HUD panel setup error:', err);
+  }
+}
 
 // Crosshair element
 const crosshair = document.getElementById('crosshair');
@@ -3080,3 +3107,4 @@ showStartScreen();
 updateAudioToggle();
 loadAudioFiles();
 gameLoop();
+setupHUDPanels();
