@@ -27,6 +27,11 @@ const io = socketIo(server, {
 });
 
 // Serve static files from 'public' directory
+// Serve a favicon (avoid 404s) and static assets
+// Redirect legacy /favicon.ico requests to our SVG favicon
+app.get('/favicon.ico', (req, res) => {
+  res.redirect(301, '/favicon.svg');
+});
 app.use(express.static("public"));
 
 // Add CORS headers for ngrok
