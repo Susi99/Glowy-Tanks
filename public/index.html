@@ -85,60 +85,6 @@
             </div>
         </div>
     </div>
-    <div id="game-container" style="display: none;">
-        <!-- Game Controls Panel - Outside Canvas -->
-        <div id="game-controls-panel" class="game-controls-panel">
-            <!-- Volume controls -->
-            <div id="volume-controls" class="neon-volume-controls">
-                <button id="volume-down" class="neon-volume-btn" title="Decrease Volume">
-                    <span class="volume-icon">🔉</span>
-                </button>
-                <div id="volume-display" class="neon-volume-display">50%</div>
-                <button id="volume-up" class="neon-volume-btn" title="Increase Volume">
-                    <span class="volume-icon">🔊</span>
-                </button>
-            </div>
-            
-            <!-- Menu button -->
-            <button id="ingame-menu-btn" class="neon-menu-btn">
-                <span class="menu-icon">☰</span>
-                <span class="menu-text">MENU</span>
-            </button>
-        </div>
-        
-        <div id="play-area">
-            <canvas id="game-canvas" width="1000" height="720"></canvas>
-            <div id="crosshair"></div>
-            
-            <div id="scoreboard">
-                <div id="kills">Kills: 0</div>
-                <div id="players-count">Players: 0</div>
-            </div>
-            <button id="audio-toggle" style="display: none;">&#128266;</button>
-            <div id="volume-slider-container" class="volume-slider-container" style="display: none;">
-                <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="50">
-                <div class="volume-label">50%</div>
-            </div>
-            <button id="back-btn" style="display: none;">Back to Menu</button>
-        </div>
-        <div id="chat-panel">
-            <div id="chat-header">Game Chat</div>
-            <div id="chat-messages"></div>
-            <form id="chat-form" autocomplete="off">
-                <input id="chat-input" type="text" placeholder="Type a message..." maxlength="200">
-                <button type="submit">Send</button>
-            </form>
-        </div>
-        <div id="leaderboard-panel">
-            <div id="leaderboard-header">🏆 Leaderboard</div>
-            <div id="leaderboard-content">
-                <div class="leaderboard-placeholder">
-                    <div class="placeholder-icon">🎯</div>
-                    <p class="placeholder-text">No scores yet</p>
-                </div>
-            </div>
-        </div>
-    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="main.js"></script>
 </body>
