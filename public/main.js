@@ -977,13 +977,37 @@ class AudioManager {
     if (!this.audioContext) return;
 
     try {
-      const response = await fetch(path);
+      // Fetch with basic validation before decoding
+      const response = await fetch(path, { cache: 'no-store' });
+      if (!response || !response.ok) {
+        const status = response ? `${response.status} ${response.statusText}` : 'no response';
+        throw new Error(`HTTP ${status} (${path})`);
+      }
+
+      const contentType = (response.headers.get('content-type') || '').toLowerCase();
+      if (contentType && !contentType.includes('audio')) {
+        console.warn(`Sound ${name}: unexpected content-type "${contentType}" for ${path}.`);
+      }
+
       const arrayBuffer = await response.arrayBuffer();
-      const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+
+      // Cross-browser decodeAudioData (promise or callback style)
+      const audioBuffer = await new Promise((resolve, reject) => {
+        try {
+          const result = this.audioContext.decodeAudioData(arrayBuffer, resolve, reject);
+          if (result && typeof result.then === 'function') {
+            result.then(resolve).catch(reject);
+          }
+        } catch (err) {
+          reject(err);
+        }
+      });
+
       this.sounds[name] = audioBuffer;
       console.log(`Loaded sound: ${name}`);
     } catch (e) {
-      console.error(`Failed to load sound ${name}:`, e);
+      const msg = e && e.message ? e.message : String(e);
+      console.error(`Failed to load sound "${name}" from ${path}: ${msg}`);
     }
   }
 
