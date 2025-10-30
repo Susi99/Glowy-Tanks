@@ -530,17 +530,11 @@ class AudioManager {
     this.audioContext = null;
     this.masterVolume = 0.5;
     this.sfxVolume = 0.7;
-    this.musicVolume = 0.3;
     this.muted = false;
-    this.musicPlaying = null;
-    this.menuMusicPlaying = false;
-    this.menuMusicNodes = null;
-    this.menuMusicAudio = null; // HTML5 Audio for MP3
 
     this.initAudioContext();
     this.loadSettings();
     this.createProceduralSounds();
-    this.loadMenuMusic();
   }
 
   initAudioContext() {
@@ -558,7 +552,6 @@ class AudioManager {
       const settings = JSON.parse(saved);
       this.masterVolume = settings.masterVolume || 0.5;
       this.sfxVolume = settings.sfxVolume || 0.7;
-      this.musicVolume = settings.musicVolume || 0.3;
       this.muted = settings.muted || false;
     }
   }
@@ -933,41 +926,10 @@ class AudioManager {
     }
   }
 
-  /**
-   * Load menu music MP3 file
-   */
-  loadMenuMusic() {
-    try {
-      this.menuMusicAudio = new Audio('sounds/music/background.mp3');
-      this.menuMusicAudio.loop = true;
-      this.menuMusicAudio.volume = this.masterVolume * this.musicVolume;
-      
-      // Preload the audio
-      this.menuMusicAudio.load();
-    } catch (err) {
-      console.warn('Could not load menu music:', err);
-    }
-  }
-
-  /**
-   * Start ambient menu music (MP3 file)
-   */
-  startMenuMusic() {
-    // Background music disabled
-  }
-
-  /**
-   * Stop menu music
-   */
-  stopMenuMusic() {
-    // Background music disabled
-  }
-
   saveSettings() {
     const settings = {
       masterVolume: this.masterVolume,
       sfxVolume: this.sfxVolume,
-      musicVolume: this.musicVolume,
       muted: this.muted,
     };
     localStorage.setItem("audioSettings", JSON.stringify(settings));
@@ -1031,52 +993,12 @@ class AudioManager {
     return source;
   }
 
-  playMusic(name, loop = true) {
-    if (!this.audioContext || !this.sounds[name] || this.muted) return;
-
-    this.stopMusic();
-
-    const source = this.audioContext.createBufferSource();
-    const gainNode = this.audioContext.createGain();
-
-    source.buffer = this.sounds[name];
-    source.loop = loop;
-
-    source.connect(gainNode);
-    gainNode.connect(this.audioContext.destination);
-
-    gainNode.gain.value = this.masterVolume * this.musicVolume;
-
-    source.start(0);
-    this.musicPlaying = { source, gainNode };
-  }
-
-  stopMusic() {
-    if (this.musicPlaying) {
-      this.musicPlaying.source.stop();
-      this.musicPlaying = null;
-    }
-  }
-
   updateVolumes() {
-    // Update menu music volume
-    if (this.menuMusicAudio) {
-      this.menuMusicAudio.volume = this.masterVolume * this.musicVolume;
-    }
-    
-    // Update game music volume if playing
-    if (this.musicPlaying) {
-      this.musicPlaying.gainNode.gain.value =
-        this.masterVolume * this.musicVolume;
-    }
+    // No background music; SFX volumes are applied when generating sounds.
   }
 
   toggleMute() {
     this.muted = !this.muted;
-    if (this.muted) {
-      this.stopMusic();
-      this.stopMenuMusic();
-    }
     this.saveSettings();
     return this.muted;
   }
@@ -1535,15 +1457,6 @@ sfxVolumeSlider.addEventListener("input", (e) => {
 
 muteAllCheckbox.addEventListener("change", (e) => {
   audioManager.muted = e.target.checked;
-  if (audioManager.muted) {
-    audioManager.stopMusic();
-    audioManager.stopMenuMusic();
-  } else {
-    // Resume menu music if on start screen
-    if (startScreen && startScreen.style.display !== 'none') {
-      audioManager.startMenuMusic();
-    }
-  }
   updateAudioToggle();
 });
 
@@ -1556,14 +1469,6 @@ applySettingsBtn.addEventListener("click", () => {
   audioManager.saveSettings();
   audioManager.updateVolumes();
   updateAudioToggle();
-  
-  // Restart menu music with new volume if not muted
-  if (!audioManager.muted && startScreen && startScreen.style.display !== 'none') {
-    audioManager.stopMenuMusic();
-    setTimeout(() => {
-      audioManager.startMenuMusic();
-    }, 100);
-  }
   
   hideAudioSettings();
 });
@@ -1754,8 +1659,6 @@ function applyInput(player, input) {
 
 // UI Helpers
 function showStartScreen() {
-  audioManager.stopMenuMusic();
-  audioManager.startMenuMusic();
   if (startScreen) startScreen.style.display = "block";
   if (gameContainer) gameContainer.style.display = "none";
   if (audioSettings) audioSettings.style.display = "none";
@@ -1774,7 +1677,6 @@ function showStartScreen() {
   clearNameError();
   playerNames = {};
   destroyedPlayers.clear();
-  audioManager.stopMusic();
   updateAudioToggle();
   if (inputInterval) {
     clearInterval(inputInterval);
@@ -2136,15 +2038,10 @@ async function loadAudioFiles() {
     "explosion",
     "sounds/effects/explosion-312361.mp3",
   );
-  await audioManager.loadSound(
-    "background-music",
-    "sounds/music/background.mp3",
-  );
 }
 
 // Socket events
 socket.on("join", (data) => {
-  audioManager.stopMenuMusic();
   playerId = data.id;
   gameId = data.gameId;
   canvas.width = data.mapWidth;
@@ -2164,9 +2061,6 @@ socket.on("join", (data) => {
     playerNames[playerId] = myPlayerName;
   }
   updateAudioToggle();
-  if (audioManager.sounds["background-music"]) {
-    audioManager.playMusic("background-music");
-  }
 });
 
 socket.on("state", (state) => {
@@ -2404,7 +2298,6 @@ socket.on("disconnect", (reason) => {
     }
     
     showStartScreen();
-    audioManager.startMenuMusic();
   }
 });
 
@@ -3187,8 +3080,3 @@ showStartScreen();
 updateAudioToggle();
 loadAudioFiles();
 gameLoop();
-
-// Start menu music after a short delay (let page settle)
-setTimeout(() => {
-  audioManager.startMenuMusic();
-}, 500);
